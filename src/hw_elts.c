@@ -82,9 +82,16 @@ alu_op_t determine_alu_op(opcode_t op) {
 }
 
 uint16_t get_immediate(uint16_t insnbits, opcode_t op) {
-  // TODO: Implement "h" bit
-  if (op >= IADD && op <= ILSR) {
+  if (op == IADD || op == ISUB || op == ICMP) {
+    return extract_unsigned_immediate(insnbits, 3, 5);
+  }
+
+  if (op == ILSR || op == ILSL) {
     return extract_unsigned_immediate(insnbits, 3, 4);
+  }
+
+  if (op == IAND || op == IOR || op == IXOR) {
+    return BITMASK_LOOKUP[extract_unsigned_immediate(insnbits, 3, 5)];
   }
 
   if (op == LDWSPIX || op == LDBSPIX || op == STWSPIX || op == STBSPIX) {

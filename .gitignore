@@ -7,7 +7,7 @@ TODO.md
 *.vct
 
 output
-
+.github/*
 # HxD backups
 *.bak
 

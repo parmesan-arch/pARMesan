@@ -50,14 +50,14 @@ In Pre-Indexed, the same address calculation occurs, but the calculated address 
 
 In Post-Indexed, the base address is used as the memory address, but the calculated address (with the offset added in) is written back into the base register.
 
-Memory is accessed in granularity of Bytes or Words (16 bits).
+Memory is accessed in granularity of Bytes or 16-bit Words.
 
 - LOADW  `[mem]`
 - LOADB  `[mem]`
 - STOREW `[mem]`
 - STOREB `[mem]`
 
-An important caveat for memory addressing: Only registers `%sp` and `%ix` can be used in Base + Offset addressing. In other words, all other GPRs (`%ax`, `%bx`, etc) can only be used in Pre- or Post-Indexed addressing, while `%sp` and `%ix` can be used in all three addressing modes.
+An important caveat for memory addressing: Only registers `%sp` and `%ix` can be used in Base + Offset addressing. Pre- and Post-Indexed modes can use any register as the base.
 
 ## Control Transfer
 There are a few options for control transfer. Jumps and Calls can be direct (to a label) or indirect (to a register). Conditional jumps can only be direct.
@@ -72,10 +72,6 @@ There are a few options for control transfer. Jumps and Calls can be direct (to 
 These are miscellaneous instructions that do not match any of the prior categories.
 - HALT
 - NOP
-
-
-
-
 
 
 

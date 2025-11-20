@@ -1,6 +1,5 @@
 #include "vct.h"
 #include "logging.h"
-#include <assert.h>
 
 static FILE *out_file = NULL;
 
@@ -106,9 +105,13 @@ void finalize_cycle() {
     return;
   }
 
-  // TODO: make these checks with log instead of asserts
-  assert(modified_regs <= 7);
-  assert(modified_mems <= 15);
+  // enforce limits and log fatally instead of aborting via assert
+  if (modified_regs > 7) {
+    write_log(LOG_FATAL, "VCT: too many register changes in cycle: %d (max 7)", modified_regs);
+  }
+  if (modified_mems > 15) {
+    write_log(LOG_FATAL, "VCT: too many memory changes in cycle: %d (max 15)", modified_mems);
+  }
   // cycle header
   uint8_t cycle_header = (modified_psw ? 0x80 : 0x00) | (modified_regs << 4) | modified_mems;
   fwrite(&cycle_header, sizeof(cycle_header), 1, out_file);

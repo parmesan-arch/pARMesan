@@ -11,9 +11,7 @@ Notably if the Index Register or Stack Pointer is used as the base register in a
 
 An instruction cycle is made of 5 machine cycles, and each machine cycle performs a different subtask of one instruction. This follows the 5-stage Fetch, Decode, Execute, Memory, Writeback paradigm. The CPU supports a dual register writeback, which is required in the case of an instruction that reads from memory and modifies a pointer, such as a pre/post-indexed LOAD.
 
-The ISA also supports some floating-point operations that use 20-bit Floating-Point registers. These registers can store a 20-bit extended half-precision floating point number which has 4 extra bits of precision over a 16-bit half-precision float in order for increased accuracy over long computational sequences. When loading or storing floating point numbers, these 4 extra bits are omitted.
-
-IO is handled throgh Memory Mapped IO, or MMIO. This is in line with the RISC principles, as dedicated port-mapped IO is a CISC idea. This also frees up more of the instruction encoding space for other instructions.
+IO is handled throgh Memory Mapped IO, or MMIO. This also frees up more of the instruction encoding space for other instructions.
 
 A Rust implementation of this CPU is planned, and a little work has been done towards that project, found in it's Git repo: [bytesize](https://github.com/Pritjam/bytesize).
 
