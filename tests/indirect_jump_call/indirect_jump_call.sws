@@ -1,0 +1,44 @@
+; Test indirect jumps and indirect calls
+; Setup MMIO print address
+  MOVL %ix, $69
+  MOVH %ix, $69
+
+; Test indirect jump JMP Rd
+  CALL GET_PCA
+GET_PCA:
+  MOV %bx, %lr
+  ADD %bx, #12
+  JMP %bx
+
+; Trap if indirect jump failed
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+
+TARGETA:
+  MOVL %dx, #1
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test indirect call CALL Rd
+  CALL GET_PCB
+GET_PCB:
+  MOV %bx, %lr
+  ADD %bx, #16
+  CALL %bx
+  STOREW %ax, [%ix]
+  JMP FINISH
+
+; Trap if call fell through unexpectedly
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+
+TARGETB:
+  MOVL %ax, $42
+  MOVH %ax, #0
+  RET
+
+FINISH:
+  HALT
+

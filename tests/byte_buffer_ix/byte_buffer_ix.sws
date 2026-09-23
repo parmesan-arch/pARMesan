@@ -1,0 +1,59 @@
+; Test byte buffer manipulation using IX as index register
+; Stack setup for function calls
+  MOVL %sp, $F0
+  MOVH %sp, $FF
+
+; Setup IX to point to byte buffer at 0x3000
+  MOVL %ix, $00
+  MOVH %ix, $30
+
+TRANSFORM_LOOP:
+; Read current byte
+  XOR %ax, %ax
+  LOADB %ax, [%ix, #0]
+  CMP %ax, #0
+  J.EQ PRINT_START
+
+; Double the byte value and store back
+  ADD %ax, %ax
+  STOREB %ax, [%ix, #0]
+
+; Advance index register by 1 byte
+  ADD %ix, #1
+  JMP TRANSFORM_LOOP
+
+PRINT_START:
+; Reset IX to buffer start 0x3000
+  MOVL %ix, $00
+  MOVH %ix, $30
+
+PRINT_LOOP:
+; Read transformed byte
+  XOR %ax, %ax
+  LOADB %ax, [%ix, #0]
+  CMP %ax, #0
+  J.EQ DONE
+
+; Print value
+  CALL PRINT_VAL
+
+; Advance index register by 1 byte
+  ADD %ix, #1
+  JMP PRINT_LOOP
+
+DONE:
+  HALT
+
+; Subroutine to print AX to MMIO, preserving IX
+PRINT_VAL:
+  STOREW %ix, [%sp, #-2]!
+  MOVL %ix, $69
+  MOVH %ix, $69
+  STOREW %ax, [%ix]
+  LOADW %ix, [%sp], #2
+  RET
+
+; Byte data section in memory
+.seek $3000
+.byte #10, #20, #30, #40, #50, #0
+

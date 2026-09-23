@@ -1,0 +1,124 @@
+; Test condition codes
+; Setup MMIO print address
+  MOVL %ix, $69
+  MOVH %ix, $69
+
+; Test EQ
+  MOVL %ax, #5
+  MOVH %ax, #0
+  MOVL %bx, #5
+  MOVH %bx, #0
+  CMP %ax, %bx
+  J.EQ PASS_EQ
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_EQ:
+  MOVL %dx, #1
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test NE
+  MOVL %ax, #5
+  MOVH %ax, #0
+  MOVL %bx, #6
+  MOVH %bx, #0
+  CMP %ax, %bx
+  J.NE PASS_NE
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_NE:
+  MOVL %dx, #2
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test GE with positive and negative numbers: 10 >= -5
+  MOVL %ax, #10
+  MOVH %ax, #0
+  MOVL %bx, $FB
+  MOVH %bx, $FF
+  CMP %ax, %bx
+  J.GE PASS_GE
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_GE:
+  MOVL %dx, #3
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test GT: 7 > 3
+  MOVL %ax, #7
+  MOVH %ax, #0
+  MOVL %bx, #3
+  MOVH %bx, #0
+  CMP %ax, %bx
+  J.GT PASS_GT
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_GT:
+  MOVL %dx, #4
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test LT: -10 < 5
+  MOVL %ax, $F6
+  MOVH %ax, $FF
+  MOVL %bx, #5
+  MOVH %bx, #0
+  CMP %ax, %bx
+  J.LT PASS_LT
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_LT:
+  MOVL %dx, #5
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test LE: 5 <= 5
+  MOVL %ax, #5
+  MOVH %ax, #0
+  MOVL %bx, #5
+  MOVH %bx, #0
+  CMP %ax, %bx
+  J.LE PASS_LE
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_LE:
+  MOVL %dx, #6
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test CS carry set on overflow: 0xFFFF + 1
+  MOVL %ax, $FF
+  MOVH %ax, $FF
+  ADD %ax, #1
+  J.CS PASS_CS
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_CS:
+  MOVL %dx, #7
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+; Test CC carry clear: 0x0010 + 1
+  MOVL %ax, $10
+  MOVH %ax, #0
+  ADD %ax, #1
+  J.CC PASS_CC
+  MOVL %dx, $AD
+  MOVH %dx, $DE
+  STOREW %dx, [%ix]
+PASS_CC:
+  MOVL %dx, #8
+  MOVH %dx, #0
+  STOREW %dx, [%ix]
+
+DONE:
+  HALT
+

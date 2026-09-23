@@ -1,0 +1,62 @@
+; Test Register Immediate ALU operations
+; Setup MMIO print address
+  MOVL %ix, $69
+  MOVH %ix, $69
+
+; MOVL and MOVH tests
+  MOVL %ax, $34
+  MOVH %ax, $12
+  STOREW %ax, [%ix]
+  MOVL %ax, $AB
+  STOREW %ax, [%ix]
+  MOVH %ax, $CD
+  STOREW %ax, [%ix]
+
+; Immediate ADD test
+  MOVL %ax, $10
+  MOVH %ax, $00
+  ADD %ax, #7
+  STOREW %ax, [%ix]
+
+; Immediate SUB test
+  SUB %ax, #5
+  STOREW %ax, [%ix]
+
+; Immediate LSL test
+  LSL %ax, #3
+  STOREW %ax, [%ix]
+
+; Immediate LSR test
+  LSR %ax, #2
+  STOREW %ax, [%ix]
+
+; Immediate AND with bitmask test
+  MOVL %ax, $FF
+  MOVH %ax, $FF
+  AND %ax, $5555
+  STOREW %ax, [%ix]
+
+; Immediate OR with bitmask test
+  OR %ax, $AAAA
+  STOREW %ax, [%ix]
+
+; Immediate XOR with bitmask test
+  XOR %ax, $00FF
+  STOREW %ax, [%ix]
+
+; Immediate CMP test
+  MOVL %ax, $0A
+  MOVH %ax, $00
+  CMP %ax, #10
+  J.EQ CMP_EQUAL
+  MOVL %cx, $00
+  STOREW %cx, [%ix]
+  JMP CMP_DONE
+CMP_EQUAL:
+  MOVL %cx, $01
+  STOREW %cx, [%ix]
+CMP_DONE:
+
+DONE:
+  HALT
+

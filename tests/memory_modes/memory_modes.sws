@@ -1,0 +1,66 @@
+; Test memory addressing modes
+; Setup MMIO print address
+  MOVL %ix, $69
+  MOVH %ix, $69
+
+; Setup SP to FFF0
+  MOVL %sp, $F0
+  MOVH %sp, $FF
+
+; Setup ax=0x1234, bx=0x5678
+  MOVL %ax, $34
+  MOVH %ax, $12
+  MOVL %bx, $78
+  MOVH %bx, $56
+
+; Store words
+  STOREW %ax, [%sp]
+  STOREW %bx, [%sp, #2]
+
+; Test Base + Offset positive
+  XOR %cx, %cx
+  LOADW %cx, [%sp, #2]
+  STOREW %cx, [%ix]
+
+; Move SP forward to FFF4 and test Base + Offset negative
+  ADD %sp, #4
+  XOR %cx, %cx
+  LOADW %cx, [%sp, #-2]
+  STOREW %cx, [%ix]
+
+; Test byte read little-endian low byte and high byte
+  XOR %dx, %dx
+  LOADB %dx, [%sp, #-4]
+  STOREW %dx, [%ix]
+
+  XOR %dx, %dx
+  LOADB %dx, [%sp, #-3]
+  STOREW %dx, [%ix]
+
+; Test byte write
+  MOVL %ax, $AB
+  MOVH %ax, #0
+  STOREB %ax, [%sp, #-4]
+  XOR %dx, %dx
+  LOADW %dx, [%sp, #-4]
+  STOREW %dx, [%ix]
+
+; Test pre-indexed addressing with dual writeback
+  MOVL %bx, $EE
+  MOVH %bx, $FF
+  XOR %ax, %ax
+  LOADW %ax, [%bx, #2]!
+  STOREW %ax, [%ix]
+  STOREW %bx, [%ix]
+
+; Test post-indexed addressing with dual writeback
+  MOVL %bx, $F0
+  MOVH %bx, $FF
+  XOR %ax, %ax
+  LOADW %ax, [%bx], #2
+  STOREW %ax, [%ix]
+  STOREW %bx, [%ix]
+
+DONE:
+  HALT
+

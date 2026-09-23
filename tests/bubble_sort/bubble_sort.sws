@@ -1,0 +1,77 @@
+; Test bubble sort algorithm
+; Initialize stack pointer to FFE0
+  MOVL %sp, $E0
+  MOVH %sp, $FF
+
+; Setup MMIO print address in %ix
+  MOVL %ix, $69
+  MOVH %ix, $69
+
+; Store 5 unsorted elements: 45, 12, 89, 3, 27
+  MOVL %ax, #45
+  MOVH %ax, #0
+  STOREW %ax, [%sp, #0]
+
+  MOVL %ax, #12
+  MOVH %ax, #0
+  STOREW %ax, [%sp, #2]
+
+  MOVL %ax, #89
+  MOVH %ax, #0
+  STOREW %ax, [%sp, #4]
+
+  MOVL %ax, #3
+  MOVH %ax, #0
+  STOREW %ax, [%sp, #6]
+
+  MOVL %ax, #27
+  MOVH %ax, #0
+  STOREW %ax, [%sp, #8]
+
+; Outer loop runs 4 times
+  MOVL %dx, #4
+  MOVH %dx, #0
+
+OUTER_LOOP:
+  MOVL %cx, #4
+  MOVH %cx, #0
+  MOV %bp, %sp
+
+INNER_LOOP:
+  LOADW %ax, [%sp, #0]
+  LOADW %bx, [%sp, #2]
+  CMP %ax, %bx
+  J.LE NO_SWAP
+
+; Swap elements
+  STOREW %bx, [%sp, #0]
+  STOREW %ax, [%sp, #2]
+
+NO_SWAP:
+  ADD %sp, #2
+  SUB %cx, #1
+  CMP %cx, #0
+  J.GT INNER_LOOP
+
+; Reset SP to array start
+  MOV %sp, %bp
+
+; Decrement outer loop counter
+  SUB %dx, #1
+  CMP %dx, #0
+  J.GT OUTER_LOOP
+
+; Print sorted elements
+  MOVL %cx, #5
+  MOVH %cx, #0
+
+PRINT_LOOP:
+  LOADW %ax, [%sp], #2
+  STOREW %ax, [%ix]
+  SUB %cx, #1
+  CMP %cx, #0
+  J.GT PRINT_LOOP
+
+DONE:
+  HALT
+
