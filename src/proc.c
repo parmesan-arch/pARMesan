@@ -66,7 +66,8 @@ void decode(proc_t *proc, instr_t *instr) {
   uint16_t imm = get_immediate(instr->insnbits, instr->op);
 
   // perform register reads
-  int dst = instr->ctrl_sigs.call ? REG_LR : extract_unsigned_immediate(instr->insnbits, 0, 3);
+  // int dst = instr->ctrl_sigs.call ? REG_LR : extract_unsigned_immediate(instr->insnbits, 0, 3);
+  int dst = (instr->op == RET) ? REG_LR : extract_unsigned_immediate(instr->insnbits, 0, 3);
   int src = extract_unsigned_immediate(instr->insnbits, 3, 3);
   if (instr->op == LDWSPIX || instr->op == LDBSPIX || instr->op == STWSPIX || instr->op == STBSPIX) {
     int s = extract_unsigned_immediate(instr->insnbits, 10, 1);
@@ -78,7 +79,8 @@ void decode(proc_t *proc, instr_t *instr) {
   instr->mem_writeval = dst_trf_val;
 
   // determine destination registers
-  instr->dst1 = dst;
+  // instr->dst1 = dst;
+  instr->dst1 = (instr->op == CALL || instr->op == CALLR) ? REG_LR : dst;
   instr->dst2 = src;
 
   // generate ALU operands
