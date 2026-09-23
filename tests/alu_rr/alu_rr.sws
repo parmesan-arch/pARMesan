@@ -1,0 +1,102 @@
+; Test Register-Register ALU operations
+; Setup MMIO print address
+  MOVL %ix, $69
+  MOVH %ix, $69
+
+; ADD test
+  MOVL %ax, $34
+  MOVH %ax, $12
+  MOVL %bx, $45
+  MOVH %bx, $23
+  ADD %ax, %bx
+  STOREW %ax, [%ix]
+
+; SUB test
+  MOVL %ax, $00
+  MOVH %ax, $50
+  MOVL %bx, $34
+  MOVH %bx, $12
+  SUB %ax, %bx
+  STOREW %ax, [%ix]
+
+; AND test
+  MOVL %ax, $00
+  MOVH %ax, $FF
+  MOVL %bx, $0F
+  MOVH %bx, $0F
+  AND %ax, %bx
+  STOREW %ax, [%ix]
+
+; OR test
+  MOVL %ax, $00
+  MOVH %ax, $F0
+  MOVL %bx, $0F
+  MOVH %bx, $00
+  OR %ax, %bx
+  STOREW %ax, [%ix]
+
+; XOR test
+  MOVL %ax, $AA
+  MOVH %ax, $AA
+  MOVL %bx, $55
+  MOVH %bx, $55
+  XOR %ax, %bx
+  STOREW %ax, [%ix]
+
+; LSL test
+  MOVL %ax, $01
+  MOVH %ax, $00
+  MOVL %bx, $04
+  MOVH %bx, $00
+  LSL %ax, %bx
+  STOREW %ax, [%ix]
+
+; LSR test
+  MOVL %ax, $80
+  MOVH %ax, $00
+  MOVL %bx, $03
+  MOVH %bx, $00
+  LSR %ax, %bx
+  STOREW %ax, [%ix]
+
+; ASR positive test
+  MOVL %ax, $80
+  MOVH %ax, $00
+  MOVL %bx, $02
+  MOVH %bx, $00
+  ASR %ax, %bx
+  STOREW %ax, [%ix]
+
+; ASR negative sign extended test
+  MOVL %ax, $00
+  MOVH %ax, $F0
+  MOVL %bx, $04
+  MOVH %bx, $00
+  ASR %ax, %bx
+  STOREW %ax, [%ix]
+
+; TEST test
+  MOVL %ax, $34
+  MOVH %ax, $12
+  MOVL %bx, $00
+  MOVH %bx, $00
+  TEST %ax, %bx
+  STOREW %ax, [%ix]
+  J.EQ TEST_PASSED
+  MOVL %cx, $00
+  STOREW %cx, [%ix]
+  JMP TEST_DONE
+TEST_PASSED:
+  MOVL %cx, $01
+  STOREW %cx, [%ix]
+TEST_DONE:
+
+; MOV test
+  MOVL %ax, $FE
+  MOVH %ax, $CA
+  MOV %bx, %ax
+  STOREW %bx, [%ix]
+
+DONE:
+  HALT
+

@@ -1,0 +1,76 @@
+; Test ADC and SBC multiword arithmetic
+; Setup MMIO print address
+  MOVL %ix, $69
+  MOVH %ix, $69
+
+; Addition with carry
+  MOVL %ax, $FF
+  MOVH %ax, $FF
+  MOVL %bx, $01
+  MOVH %bx, $00
+
+  MOVL %cx, $01
+  MOVH %cx, $00
+  MOVL %dx, $02
+  MOVH %dx, $00
+
+  ADD %ax, %cx
+  ADC %bx, %dx
+
+  STOREW %bx, [%ix]
+  STOREW %ax, [%ix]
+
+; Addition without carry
+  MOVL %ax, $20
+  MOVH %ax, $00
+  MOVL %bx, $10
+  MOVH %bx, $00
+
+  MOVL %cx, $40
+  MOVH %cx, $00
+  MOVL %dx, $30
+  MOVH %dx, $00
+
+  ADD %ax, %cx
+  ADC %bx, %dx
+
+  STOREW %bx, [%ix]
+  STOREW %ax, [%ix]
+
+; Subtraction with borrow
+  MOVL %ax, $00
+  MOVH %ax, $00
+  MOVL %bx, $04
+  MOVH %bx, $00
+
+  MOVL %cx, $01
+  MOVH %cx, $00
+  MOVL %dx, $00
+  MOVH %dx, $00
+
+  SUB %ax, %cx
+  SBC %bx, %dx
+
+  STOREW %bx, [%ix]
+  STOREW %ax, [%ix]
+
+; Subtraction without borrow
+  MOVL %ax, $0A
+  MOVH %ax, $00
+  MOVL %bx, $05
+  MOVH %bx, $00
+
+  MOVL %cx, $03
+  MOVH %cx, $00
+  MOVL %dx, $02
+  MOVH %dx, $00
+
+  SUB %ax, %cx
+  SBC %bx, %dx
+
+  STOREW %bx, [%ix]
+  STOREW %ax, [%ix]
+
+DONE:
+  HALT
+

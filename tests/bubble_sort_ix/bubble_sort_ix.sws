@@ -1,0 +1,70 @@
+; Test bubble sort using IX as the index register
+; Stack setup for function calls
+  MOVL %sp, $F0
+  MOVH %sp, $FF
+
+; Outer loop runs 5 passes
+  MOVL %dx, #5
+  MOVH %dx, #0
+
+OUTER_LOOP:
+; Reset IX to array base address 0x1000
+  MOVL %ix, $00
+  MOVH %ix, $10
+
+; Inner loop runs 5 comparisons
+  MOVL %cx, #5
+  MOVH %cx, #0
+
+INNER_LOOP:
+; Compare adjacent elements using IX base offset
+  LOADW %ax, [%ix, #0]
+  LOADW %bx, [%ix, #2]
+  CMP %ax, %bx
+  J.LE NO_SWAP
+
+; Swap elements
+  STOREW %bx, [%ix, #0]
+  STOREW %ax, [%ix, #2]
+
+NO_SWAP:
+; Advance index register to next element
+  ADD %ix, #2
+  SUB %cx, #1
+  CMP %cx, #0
+  J.GT INNER_LOOP
+
+; Decrement outer loop counter
+  SUB %dx, #1
+  CMP %dx, #0
+  J.GT OUTER_LOOP
+
+; Print sorted elements from memory
+  MOVL %ix, $00
+  MOVH %ix, $10
+  MOVL %cx, #6
+  MOVH %cx, #0
+
+PRINT_LOOP:
+  LOADW %ax, [%ix], #2
+  CALL PRINT_VAL
+  SUB %cx, #1
+  CMP %cx, #0
+  J.GT PRINT_LOOP
+
+DONE:
+  HALT
+
+; Subroutine to print AX to MMIO, preserving IX
+PRINT_VAL:
+  STOREW %ix, [%sp, #-2]!
+  MOVL %ix, $69
+  MOVH %ix, $69
+  STOREW %ax, [%ix]
+  LOADW %ix, [%sp], #2
+  RET
+
+; Data section in memory
+.seek $1000
+.word #64, #25, #12, #88, #7, #42
+

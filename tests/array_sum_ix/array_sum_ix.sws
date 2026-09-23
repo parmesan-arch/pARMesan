@@ -1,0 +1,51 @@
+; Test array summation and indexing with IX
+; Stack setup for function calls
+  MOVL %sp, $F0
+  MOVH %sp, $FF
+
+; Setup IX to point to array at 0x2000
+  MOVL %ix, $00
+  MOVH %ix, $20
+
+; Zero out accumulator BX
+  XOR %bx, %bx
+
+; Loop counter: 5 elements
+  MOVL %cx, #5
+  MOVH %cx, #0
+
+SUM_LOOP:
+; Post-indexed load advances IX by 2 after reading element into AX
+  LOADW %ax, [%ix], #2
+  ADD %bx, %ax
+  CALL PRINT_VAL
+  SUB %cx, #1
+  CMP %cx, #0
+  J.GT SUM_LOOP
+
+; Print total sum accumulated in BX
+  MOV %ax, %bx
+  CALL PRINT_VAL
+
+; Reset IX to 0x2000 and test Base + Offset lookahead: [%ix, #6] is 4th element (170)
+  MOVL %ix, $00
+  MOVH %ix, $20
+  LOADW %ax, [%ix, #6]
+  CALL PRINT_VAL
+
+DONE:
+  HALT
+
+; Subroutine to print AX to MMIO, preserving IX
+PRINT_VAL:
+  STOREW %ix, [%sp, #-2]!
+  MOVL %ix, $69
+  MOVH %ix, $69
+  STOREW %ax, [%ix]
+  LOADW %ix, [%sp], #2
+  RET
+
+; Data section in memory
+.seek $2000
+.word #15, #85, #30, #170, #200
+
